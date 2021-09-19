@@ -15,3 +15,4 @@ Features :
 For now, the walking feature is not perfect but it's close to be ready !
 Please watch this video to see the present version.
 
+[![Ricardo walking gif](doc/ricardoWalking.gif)](doc/ricardoWalking.gif)
