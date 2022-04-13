@@ -36,19 +36,19 @@ int positionsStandUp[nbServo][nbPos] = {{-1, -2, -3, -4, -5, -6, -7, -8, -9, -10
                                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
                                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
                                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
+                                        {-1, -2, -3, -4, -5, -6, -7, -8, -9, -13},
                                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
-                                        {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
-                                        {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10},
+                                        {-1, -2, -3, -4, -5, -6, -7, -8, -9, -13},
                                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10}};
 
 int stepWalk = 1;    //Incrementation value for walk(speed of the robot)
-float heightGarot = 80;
-float lFemur = 65;
-float lTibia = 65;
+float heightGarot = 70;
+float lFemur = 48;
+float lTibia = 55;
 float footProgress = 0;
 float footRise= 0;
 
-int angleCycle[] = {0,0,60,60,120,120,180,180};
+int angleCycle[] = {180,180,0,0,0,0,180,180};
 
 void setup()
 {
@@ -136,10 +136,12 @@ void walk()
   for (int i = 0; i <= 6; i = i+2) //Pour chaque pate
   {
     Serial.println(i);
-    float posPiedX = heightGarot / 2.5 * sin(angleCycle[i] / 180. * M_PI) + lTibia / 4.0;
-    float posPiedY = max(lTibia / 8. * cos(angleCycle[i] / 180. * M_PI), 0);
-    footProgress = posPiedX;
-    footRise = posPiedY;
+    //TODO : correct this equation
+    //On est bon, juste au retour des pates arrière, on tape les genoux arrière au sol, ça racle
+    float x = heightGarot / 2.5 * sin(angleCycle[i] / 180. * M_PI) + lTibia / 4.0;
+    float y = lTibia / 8. * cos(angleCycle[i] / 180. * M_PI);
+    footProgress = x;
+    footRise = y;
     //Calcul angles
     /* Give both angles according to a height and advance of the foot in relation 
     to the position of the hip according to the length of the femur and tibia.*/
@@ -154,11 +156,31 @@ void walk()
     float angleHGP = M_PI - anglePHG - angleGPH;
 
     // angle entre la verticale et le segment hanche - genou (fémur)
-    float hipAngle = anglePHG + atan(footProgress / heightHipFoot);
+    //ATAN : float hipAngle = anglePHG + atan(footProgress / heightHipFoot);
+    float hipAngle = anglePHG + atan(footProgress/heightHipFoot); //with atan2
 
     //angle entre le segment hanche - genou et le segment genou - pied (tibia)
     float kneeAngle= M_PI - angleHGP;
 
+    /****** TRY NOT SUCESS BUT 
+    //stuff for calculating th2
+    float r_2 = pow(x,2) + pow(y,2);
+    float l_sq = pow(lTibia,2)+ pow(lFemur,2);
+    float term2 = (r_2 - l_sq)/(2*lFemur*lTibia);
+    float term1 = (pow(1 - pow(term2,2),0.5))*-1;
+    //calculate th2
+    float th2 = atan2(term1, term2);
+
+    //Stuff for calculating th2
+    float k1 = lTibia + lFemur*cos(th2);
+    float k2 = lFemur*sin(th2);
+    float r  = pow(pow(k1,2) + pow(k2,2),0.5);
+    float gamma = atan2(k2,k1);
+    //calculate th1
+    float th1 = atan2(y,x) - gamma ;
+
+    ****/
+    
     //Radius to degrees
     kneeAngle = kneeAngle *180 / 3.14 - 90;
     hipAngle = hipAngle *180 / 3.14 - 90;
@@ -167,6 +189,9 @@ void walk()
     if(hipAngle<=-45.0){
       hipAngle = -45.0;
     }
+
+    
+    
     
     Serial.print(kneeAngle);
     Serial.print("-");
@@ -176,8 +201,8 @@ void walk()
 
     writeAngle(kneeAngle, i);
     writeAngle(hipAngle, i+1);
-    delay(5);
 
 
   }
+  delay(10);
 }
