@@ -161,25 +161,6 @@ void walk()
 
     //angle entre le segment hanche - genou et le segment genou - pied (tibia)
     float kneeAngle= M_PI - angleHGP;
-
-    /****** TRY NOT SUCESS BUT 
-    //stuff for calculating th2
-    float r_2 = pow(x,2) + pow(y,2);
-    float l_sq = pow(lTibia,2)+ pow(lFemur,2);
-    float term2 = (r_2 - l_sq)/(2*lFemur*lTibia);
-    float term1 = (pow(1 - pow(term2,2),0.5))*-1;
-    //calculate th2
-    float th2 = atan2(term1, term2);
-
-    //Stuff for calculating th2
-    float k1 = lTibia + lFemur*cos(th2);
-    float k2 = lFemur*sin(th2);
-    float r  = pow(pow(k1,2) + pow(k2,2),0.5);
-    float gamma = atan2(k2,k1);
-    //calculate th1
-    float th1 = atan2(y,x) - gamma ;
-
-    ****/
     
     //Radius to degrees
     kneeAngle = kneeAngle *180 / 3.14 - 90;
@@ -190,8 +171,6 @@ void walk()
       hipAngle = -45.0;
     }
 
-    
-    
     
     Serial.print(kneeAngle);
     Serial.print("-");
